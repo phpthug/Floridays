@@ -1,0 +1,4 @@
+floridays_entity:
+    resource: "@FloridaysEntityBundle/Resources/config/routing.yml"
+    prefix:   /
+

@@ -1,0 +1,7 @@
+parameters:
+#    floridays_entity.example.class: Khowe\FloridaysEntityBundle\Example
+
+services:
+#    floridays_entity.example:
+#        class: %floridays_entity.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
