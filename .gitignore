@@ -14,3 +14,4 @@ app/config/parameters.yml
 
 *.sublime-project
 *.sublime-workspace
+.idea/*
