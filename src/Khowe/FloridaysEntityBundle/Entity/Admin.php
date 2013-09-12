@@ -28,6 +28,14 @@ class Admin
     */
     protected $active = true;
 
+    /**
+     * @var User
+     *
+     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="userId", referencedColumnName="id")
+     */
+    protected $user;
+
 
     /**
      * Get id
@@ -60,5 +68,28 @@ class Admin
     public function getActive()
     {
         return $this->active;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Khowe\FloridaysEntityBundle\Entity\User $user
+     * @return Admin
+     */
+    public function setUser(\Khowe\FloridaysEntityBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+    
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Khowe\FloridaysEntityBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

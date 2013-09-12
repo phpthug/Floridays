@@ -1,3 +1,7 @@
+floridays_api:
+    resource: "@FloridaysApiBundle/Resources/config/routing.yml"
+    prefix:   /
+
 floridays_entity:
     resource: "@FloridaysEntityBundle/Resources/config/routing.yml"
     prefix:   /

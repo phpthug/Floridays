@@ -57,6 +57,13 @@ class Document
      */
     private $lastUpdated;
 
+    /**
+     * @var Property
+     *
+     * @ORM\Column(name="property", type="string", length=1)
+     */
+    protected $property;
+
 
     /**
      * Get id
@@ -197,5 +204,28 @@ class Document
     public function setUpdatedAtValue()
     {
         $this->lastUpdated = new \DateTime();
+    }
+
+    /**
+     * Set property
+     *
+     * @param string $property
+     * @return Document
+     */
+    public function setProperty($property)
+    {
+        $this->property = $property;
+    
+        return $this;
+    }
+
+    /**
+     * Get property
+     *
+     * @return string 
+     */
+    public function getProperty()
+    {
+        return $this->property;
     }
 }

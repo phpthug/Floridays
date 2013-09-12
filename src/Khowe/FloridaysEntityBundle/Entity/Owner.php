@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Owner
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Khowe\FloridaysEntityBundle\Entity\OwnerRepository")
  */
 class Owner
 {
@@ -25,7 +25,7 @@ class Owner
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Unit", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="Unit", mappedBy="owner", cascade="persist")
      */
     protected $units;
 
@@ -37,10 +37,18 @@ class Owner
     protected $phoneNumber;
     
     /**
-     * @ORM\OneToOne(targetEntity="Address")
+     * @ORM\OneToOne(targetEntity="Address", cascade="persist")
      * @ORM\JoinColumn(name="addressId", referencedColumnName="id")
      */
     protected $address;
+
+    /**
+     * @var User
+     *
+     * @ORM\OneToOne(targetEntity="User", cascade="persist")
+     * @ORM\JoinColumn(name="userId", referencedColumnName="id")
+     */
+    protected $user;
 
     public function __construct() 
     {
@@ -181,5 +189,28 @@ class Owner
     public function getPhoneNumber()
     {
         return $this->phoneNumber;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Khowe\FloridaysEntityBundle\Entity\User $user
+     * @return Owner
+     */
+    public function setUser(\Khowe\FloridaysEntityBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+    
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Khowe\FloridaysEntityBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }
