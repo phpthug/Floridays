@@ -1,0 +1,7 @@
+parameters:
+#    floridays_api.example.class: Khowe\FloridaysApiBundle\Example
+
+services:
+#    floridays_api.example:
+#        class: %floridays_api.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

@@ -3,6 +3,7 @@
 namespace Khowe\FloridaysApiBundle\Controller;
 
 use Doctrine\ORM\PersistentCollection;
+use Khowe\FloridaysApiBundle\Enum\OwnerParams;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Khowe\FloridaysEntityBundle;
@@ -12,7 +13,7 @@ use Khowe\FloridaysEntityBundle;
  * @package Khowe\FloridaysApiBundle\Controller
  * @author  Kenneth Howe <knnthhowe@gmail.com>
  */
-class OwnerController extends Controller{
+class OwnerController extends ApiController{
 
     /**
      * Get a single owner by property
@@ -25,7 +26,10 @@ class OwnerController extends Controller{
     public function getAction($propertyId, $ownerId)
     {
         $owner = $this->getDoctrine()->getRepository('FloridaysEntityBundle:Owner')->find($ownerId);
-        return new JsonResponse($this->processOwner($owner));
+        if(! $owner) {
+            return $this->returnError('Owner with ID ' . $ownerId . ' not found for property ID ' . $propertyId);
+        }
+        return $this->returnResponse($this->processOwner($owner));
     }
 
     /**
@@ -50,7 +54,30 @@ class OwnerController extends Controller{
             $data[$owner->getId()] = $this->processOwner($owner);
         }
 
-        return new JsonResponse($data);
+        return $this->returnResponse($data);
+    }
+
+    /**
+     * Process the value submitted for an owner and return all fields as an array
+     *
+     * @return array|bool
+     */
+    private function getOwnerSubmittedValues()
+    {
+        $data = [];
+
+        $ownerParams = OwnerParams::get();
+        $ownerParamsConfig = \Khowe\FloridaysApiBundle\Config\OwnerParams::get();
+
+        foreach($ownerParams as $param => $value) {
+            if($ownerParamsConfig[$value]['required'] && $this->getRequest()->request->get($value, null) == null) {
+                return false;
+            }
+
+            $data[$value] = $this->getRequest()->request->get($value, '');
+        }
+
+        return $data;
     }
 
     /**
@@ -62,30 +89,16 @@ class OwnerController extends Controller{
      */
     public function createAction($propertyId)
     {
-        $requiredParams = [
-            'firstName' => $this->getRequest()->request->get('firstName'),
-            'lastName' => $this->getRequest()->request->get('lastName'),
-            'emailAddress' => $this->getRequest()->request->get('emailAddress'),
-            'password' => $this->getRequest()->request->get('password'),
-            'street' => $this->getRequest()->request->get('street'),
-            'suite' => $this->getRequest()->request->get('suite'),
-            'city' => $this->getRequest()->request->get('city'),
-            'state' => $this->getRequest()->request->get('state'),
-            'zipCode' => $this->getRequest()->request->get('zipCode'),
-            'country' => $this->getREquest()->request->get('country'),
-            'unitNumber' => $this->getRequest()->request->get('unitNumber'),
-            'unitContract' => $this->getRequest()->request->get('unitContract'),
-            'phoneNumber' => $this->getRequest()->request->get('phoneNumber'),
-        ];
 
-        foreach($requiredParams as $param => $value) {
-            if($value == '') {
-                return new JsonResponse(['success' => false, 'message' => 'Missing required parameter ' . $param], 400);
-            }
+        $firstName = $lastName = $emailAddress = $password = $street = $suite = $city = $state = $zipCode = $country = $phoneNumber = '';
+        $unit = [];
+
+        if(! ($values = $this->getOwnerSubmittedValues())) {
+            return $this->returnError('Required parameters missing');
         }
 
-        extract($requiredParams);
-        
+        extract($this->getOwnerSubmittedValues());
+
         $owner = new FloridaysEntityBundle\Entity\Owner();
         $owner->setUser(new FloridaysEntityBundle\Entity\User());
         $owner->setAddress(new FloridaysEntityBundle\Entity\Address());
@@ -107,15 +120,112 @@ class OwnerController extends Controller{
 
         $owner->setPhoneNumber($phoneNumber);
 
-        $unit = new FloridaysEntityBundle\Entity\Unit();
+        foreach($unit as $u) {
+            $unitObject = new FloridaysEntityBundle\Entity\Unit();
+            if($u['contractNumber'] == '' || $u['unitNumber'] == '') {
+                return $this->returnError('Unit/contract information seems to be incomplete. Please try again.');
+            }
+            $owner->addUnit(
+                $unitObject->setContractNumber($u['contractNumber'])
+                ->setUnitNumber($u['unitNumber'])
+                ->setProperty($propertyId)->setOwner($owner)
+            );
+        }
 
-        $owner->addUnit($unit->setContractNumber($unitContract)->setUnitNumber($unitNumber)->setProperty($propertyId));
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($owner);
+            $em->flush();
+        } catch(\Exception $e) {
+            return $this->returnError("Error: " . $e->getMessage());
+        }
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($owner);
-        $em->flush();
+        return $this->returnResponse($this->processOwner($owner));
+    }
 
-        return new JsonResponse(array_merge(['success' => true], $this->processOwner($owner)));
+    /**
+     * Update a given owner
+     *
+     * @param $propertyId
+     * @param $ownerId
+     *
+     * @return JsonResponse
+     */
+    public function updateAction($propertyId, $ownerId)
+    {
+        $firstName = $lastName = $emailAddress = $password = $street = $suite = $city = $state = $zipCode = $country = $phoneNumber = '';
+        $unit = [];
+
+        $ownerId = (int) $ownerId;
+
+        $owner = $this->getDoctrine()->getRepository('FloridaysEntityBundle:Owner')
+            ->findById($propertyId, $ownerId);
+
+        if(! $owner) {
+            return $this->returnError('Owner with ID ' . $ownerId . ' not found for property ' . $propertyId);
+        }
+
+        if(! ($values = $this->getOwnerSubmittedValues())) {
+            return $this->returnError('Required parameters missing');
+        }
+
+        extract($values);
+
+        $owner->getUser()
+            ->setFirstName($firstName)
+            ->setLastName($lastName)
+            ->setEmailAddress($emailAddress)
+            ->setProperty($propertyId)
+            ->setPassword($password);
+
+        $owner->getAddress()
+            ->setStreet($street)
+            ->setSuite($suite)
+            ->setCity($city)
+            ->setState($state)
+            ->setZipCode($zipCode)
+            ->setCountry($country);
+
+        $owner->setPhoneNumber($phoneNumber);
+
+        //Order n^2, but due to small amoutn of units per owner, not a huge deal
+        foreach($owner->getUnits() as $ownerUnit) {
+            foreach($unit as $key => $u) {
+                if(isset($u['id']) && $u['id'] == $ownerUnit->getId()) {
+                    //If both fields are empty, let's remove the unit from the owner
+                    //If ONE is empty, we should probably throw an error
+                    if ($u['contractNumber'] == '' && $u['unitNumber'] == '') {
+                        $owner->removeUnit($ownerUnit);
+                    } elseif ($u['contractNumber'] == '' || $u['unitNumber'] == '') {
+                        return $this->returnError('The information for a unit seems to be partial or missing. Please try again.');
+                    }
+                    $ownerUnit->setContractNumber($u['contractNumber']);
+                    $ownerUnit->setUnitNumber($u['unitNumber']);
+                    unset($unit[$key]);
+                }
+            }
+        }
+
+        foreach($unit as $u) {
+            $unitObject = new FloridaysEntityBundle\Entity\Unit();
+            $unitObject
+                ->setContractNumber($u['contractNumber'])
+                ->setUnitNumber($u['unitNumber'])
+                ->setProperty($propertyId)
+                ->setOwner($owner);
+            $owner->addUnit(
+                $unitObject
+            );
+        }
+
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        } catch(\Exception $e) {
+            return $this->returnError("Error: " . $e->getMessage());
+        }
+
+        return $this->returnResponse($this->processOwner($owner));
     }
 
     /**

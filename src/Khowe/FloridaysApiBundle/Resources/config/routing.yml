@@ -1,0 +1,63 @@
+floridays_api_owner_create:
+    pattern:  /api/v1/property/{propertyId}/owner/create
+    defaults: { _controller: FloridaysApiBundle:Owner:create }
+    requirements:
+        method: put
+
+floridays_api_owner_update:
+    pattern: /api/v1/property/{propertyId}/owner/update/{ownerId}
+    defaults: { _controller: FloridaysApiBundle:Owner:update }
+    requirements:
+        method: post
+
+floridays_api_owner_search:
+    pattern: /api/v1/property/{propertyId}/owner/search
+    defaults: { _controller: FloridaysApiBundle:Owner:search }
+
+floridays_api_owner_get:
+    pattern: /api/v1/property/{propertyId}/owner/get/{ownerId}
+    defaults: { _controller: FloridaysApiBundle:Owner:get }
+
+floridays_api_document_create:
+    pattern: /api/v1/property/{propertyId}/document/create
+    defaults: { _controller: FloridaysApiBundle:Document:create }
+    requirements:
+        method: put
+
+floridays_api_document_update:
+    pattern: /api/v1/property/{propertyId}/document/update
+    defaults: { _controller: FloridaysApiBundle:Document:update }
+    requirements:
+        method: post
+
+floridays_api_document_get:
+    pattern: /api/v1/property/{propertyId}/document/get/{documentId}
+    defaults: { _controller: FloridaysApiBundle:Document:get }
+    requirements:
+        documentId: \d+
+
+floridays_api_document_get_list:
+    pattern: /api/v1/property/{propertyId}/document/get/all
+    defaults: { _controller: FloridaysApiBundle:Document:getAll }
+
+floridays_api_admin_create:
+    pattern: /api/v1/property/{propertyId}/admin/create
+    defaults: { _controller: FloridaysApiBundle:Admin:create }
+    requirements:
+        method: put
+
+floridays_api_admin_update:
+    pattern: /api/v1/property/{propertyId}/admin/update/{adminId}
+    defaults: { _controller: FloridaysApiBundle:Admin:update }
+    requirements:
+        method: post
+
+floridays_api_admin_get:
+    pattern: /api/v1/property/{propertyId}/admin/get/{adminId}
+    defaults: { _controller: FloridaysApiBundle:Admin:get }
+    requirements:
+        adminId: \d+
+
+floridays_api_admin_get_all:
+    pattern: /api/v1/property/{propertyId}/admin/get/all
+    defaults: { _controller: FloridaysApiBundle:Admin:getAll }
