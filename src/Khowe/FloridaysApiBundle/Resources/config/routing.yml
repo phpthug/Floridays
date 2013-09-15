@@ -36,6 +36,16 @@ floridays_api_document_get:
     requirements:
         documentId: \d+
 
+floridays_api_document_get_all:
+    pattern: /api/v1/property/{propertyId}/document/get/all
+    defaults: { _controller: FloridaysApiBundle:Document:getAll }
+
+floridays_api_document_get_by_type:
+    pattern: /api/v1/property/{propertyId}/document/type/{documentType}
+    defaults: { _controller: FloridaysApiBundle:Document:getByType }
+    requirements:
+        documentType: \d+
+
 floridays_api_document_get_list:
     pattern: /api/v1/property/{propertyId}/document/get/all
     defaults: { _controller: FloridaysApiBundle:Document:getAll }

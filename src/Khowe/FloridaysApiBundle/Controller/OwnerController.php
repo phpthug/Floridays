@@ -4,7 +4,8 @@ namespace Khowe\FloridaysApiBundle\Controller;
 
 use Doctrine\ORM\PersistentCollection;
 use Khowe\FloridaysApiBundle\Enum\OwnerParams;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Khowe\FloridaysApiBundle\Config;
+use Khowe\FloridaysApiBundle\Helper\ParameterParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Khowe\FloridaysEntityBundle;
 
@@ -58,29 +59,6 @@ class OwnerController extends ApiController{
     }
 
     /**
-     * Process the value submitted for an owner and return all fields as an array
-     *
-     * @return array|bool
-     */
-    private function getOwnerSubmittedValues()
-    {
-        $data = [];
-
-        $ownerParams = OwnerParams::get();
-        $ownerParamsConfig = \Khowe\FloridaysApiBundle\Config\OwnerParams::get();
-
-        foreach($ownerParams as $param => $value) {
-            if($ownerParamsConfig[$value]['required'] && $this->getRequest()->request->get($value, null) == null) {
-                return false;
-            }
-
-            $data[$value] = $this->getRequest()->request->get($value, '');
-        }
-
-        return $data;
-    }
-
-    /**
      * Create a new owner
      *
      * @param $propertyId
@@ -93,11 +71,11 @@ class OwnerController extends ApiController{
         $firstName = $lastName = $emailAddress = $password = $street = $suite = $city = $state = $zipCode = $country = $phoneNumber = '';
         $unit = [];
 
-        if(! ($values = $this->getOwnerSubmittedValues())) {
+        if(! ($values = ParameterParser::parseParameters($this->getRequest(), OwnerParams::get(), Config\OwnerParams::get()))) {
             return $this->returnError('Required parameters missing');
         }
 
-        extract($this->getOwnerSubmittedValues());
+        extract($values);
 
         $owner = new FloridaysEntityBundle\Entity\Owner();
         $owner->setUser(new FloridaysEntityBundle\Entity\User());
@@ -165,7 +143,7 @@ class OwnerController extends ApiController{
             return $this->returnError('Owner with ID ' . $ownerId . ' not found for property ' . $propertyId);
         }
 
-        if(! ($values = $this->getOwnerSubmittedValues())) {
+        if(! ($values = ParameterParser::parseParameters($this->getRequest(), OwnerParams::get(), Config\OwnerParams::get()))) {
             return $this->returnError('Required parameters missing');
         }
 
@@ -242,7 +220,8 @@ class OwnerController extends ApiController{
                 'first' => $owner->getUser()->getFirstName(),
                 'last' => $owner->getUser()->getLastName(),
             ],
-            'emailAddress' => $owner->getUser()->getEmailAddress()
+            'emailAddress' => $owner->getUser()->getEmailAddress(),
+            'phoneNumber' => $owner->getPhoneNumber()
         ];
     }
 

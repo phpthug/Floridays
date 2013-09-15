@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
+ * @ORM\Entity(repositoryClass="Khowe\FloridaysEntityBundle\Entity\DocumentRepository")
  */
 class Document
 {
@@ -63,6 +64,13 @@ class Document
      * @ORM\Column(name="property", type="string", length=1)
      */
     protected $property;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="type", type="integer")
+     */
+    protected $type;
 
 
     /**
@@ -227,5 +235,28 @@ class Document
     public function getProperty()
     {
         return $this->property;
+    }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     * @return Document
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }
