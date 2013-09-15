@@ -25,7 +25,7 @@ floridays_api_document_create:
         method: put
 
 floridays_api_document_update:
-    pattern: /api/v1/property/{propertyId}/document/update
+    pattern: /api/v1/property/{propertyId}/document/update/{documentId}
     defaults: { _controller: FloridaysApiBundle:Document:update }
     requirements:
         method: post

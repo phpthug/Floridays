@@ -49,14 +49,14 @@ class Document
      *
      * @ORM\Column(name="createdAt", type="datetime")
      */
-    private $createdAt;
+    public $createdAt;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="lastUpdated", type="datetime")
      */
-    private $lastUpdated;
+    public $lastUpdated;
 
     /**
      * @var Property
@@ -203,7 +203,11 @@ class Document
     */
     public function setCreatedAtValue()
     {
-        $this->createdAt = new \DateTime();
+        if(is_null($this->getCreatedAt())) {
+            $this->setCreatedAt(new \DateTime());
+        }
+
+        return $this;
     }
 
     /**
@@ -211,7 +215,9 @@ class Document
     */
     public function setUpdatedAtValue()
     {
-        $this->lastUpdated = new \DateTime();
+        $this->setLastUpdated(new \DateTime());
+
+        return $this;
     }
 
     /**
