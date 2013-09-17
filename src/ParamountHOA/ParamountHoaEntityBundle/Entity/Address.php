@@ -237,6 +237,10 @@ class Address
             $this->setCreatedAt(new \DateTime());
         }
 
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
+        }
+
         return $this;
     }
 
@@ -295,5 +299,23 @@ class Address
     public function getLastUpdated()
     {
         return $this->lastUpdated;
+    }
+
+    /**
+     * Serialize address as array
+     *
+     * @return array
+     */
+    public function getSerialized()
+    {
+        return [
+            'id' => $this->getId(),
+            'street' => $this->getStreet(),
+            'suite' => $this->getSuite(),
+            'city' => $this->getCity(),
+            'state' => $this->getState(),
+            'zipCode' => $this->getZipCode(),
+            'country' => $this->getCountry()
+        ];
     }
 }

@@ -5,6 +5,7 @@ namespace ParamountHOA\ParamountHoaApiBundle\Helper;
 class ParameterParser {
 
     public static function parseParameters($request, $parameters, $config) {
+
         $data = [];
 
         foreach($parameters as $param => $value) {

@@ -238,6 +238,10 @@ class Owner
             $this->setCreatedAt(new \DateTime());
         }
 
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
+        }
+
         return $this;
     }
 
@@ -295,5 +299,22 @@ class Owner
     public function getLastUpdated()
     {
         return $this->lastUpdated;
+    }
+
+    public function getSerialized()
+    {
+        $units = [];
+
+        foreach($this->getUnits() as $unit) {
+            array_push($units, $unit->getSerialized());
+        }
+
+        return [
+            'id' => $this->getId(),
+            'user' => $this->getUser()->getSerialized(),
+            'address' => $this->getAddress()->getSerialized(),
+            'units' => $units,
+            'phoneNumber' => $this->getPhoneNumber()
+        ];
     }
 }

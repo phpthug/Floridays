@@ -212,6 +212,10 @@ class Unit {
             $this->setCreatedAt(new \DateTime());
         }
 
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
+        }
+
         return $this;
     }
 
@@ -269,5 +273,15 @@ class Unit {
     public function getLastUpdated()
     {
         return $this->lastUpdated;
+    }
+
+    public function getSerialized()
+    {
+        return [
+            'id' => $this->getId(),
+            'unitNumber' => $this->getUnitNumber(),
+            'contractNumber' => $this->getContractNumber(),
+            'owner' => $this->getOwner()->getId()
+        ];
     }
 }

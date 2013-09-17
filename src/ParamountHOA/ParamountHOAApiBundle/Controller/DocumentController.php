@@ -88,14 +88,7 @@ class DocumentController extends ApiController {
             return $this->returnError("Error: " . $e->getMessage());
         }
 
-        return $this->returnResponse([
-            'description' => $document->getDescription(),
-            'archived' => $document->getArchived(),
-            'created' => $document->createdAt,
-            'updated' => $document->lastUpdated,
-            'path' => $document->getPath(),
-            'type' => $document->getType()
-        ], 'Document was saved successfully.');
+        return $this->returnResponse($document->getSerialized(), 'Document was saved successfully.');
     }
 
     /**
@@ -117,13 +110,7 @@ class DocumentController extends ApiController {
                 $data[$document->getType()] = [];
             }
 
-            $data[$document->getType()][$document->getId()] = [
-                'description' => $document->getDescription(),
-                'archived' => $document->getArchived(),
-                'created' => $document->getCreatedAt(),
-                'updated' => $document->getLastUpdated(),
-                'path' => $document->getPath()
-            ];
+            $data[$document->getType()][] =  $document->getSerialized();
         }
 
         return $this->returnResponse($data);
@@ -147,13 +134,7 @@ class DocumentController extends ApiController {
                 $data[$document->getType()] = [];
             }
 
-            $data[$document->getType()][$document->getId()] = [
-                'description' => $document->getDescription(),
-                'archived' => $document->getArchived(),
-                'created' => $document->getCreatedAt(),
-                'updated' => $document->getLastUpdated(),
-                'path' => $document->getPath()
-            ];
+            $data[$document->getType()][] =  $document->getSerialized();
         }
 
         return $this->returnResponse($data);
@@ -177,14 +158,7 @@ class DocumentController extends ApiController {
             return $this->returnError('The requested document was not found.');
         }
 
-        return $this->returnResponse([
-            'description' => $document->getDescription(),
-            'archived' => $document->getArchived(),
-            'created' => $document->getCreatedAt(),
-            'updated' => $document->getLastUpdated(),
-            'path' => $document->getPath(),
-            'type' => $document->getType()
-        ]);
+        return $this->returnResponse($document->getSerialized());
 
     }
 

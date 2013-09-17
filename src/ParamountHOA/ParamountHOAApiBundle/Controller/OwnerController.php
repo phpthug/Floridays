@@ -11,7 +11,6 @@ use ParamountHOA\ParamountHoaEntityBundle\Entity\Owner;
 use ParamountHOA\ParamountHoaEntityBundle\Entity\Unit;
 use ParamountHOA\ParamountHoaEntityBundle\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Khowe\FloridaysEntityBundle;
 
 /**
  * Class OwnerController
@@ -34,7 +33,7 @@ class OwnerController extends ApiController{
         if(! $owner) {
             return $this->returnError('Owner with ID ' . $ownerId . ' not found for property ID ' . $propertyId);
         }
-        return $this->returnResponse($this->processOwner($owner));
+        return $this->returnResponse($owner->getSerialized());
     }
 
     /**
@@ -56,7 +55,7 @@ class OwnerController extends ApiController{
         $data = [];
 
         foreach($owners as $owner) {
-            $data[$owner->getId()] = $this->processOwner($owner);
+            $data[$owner->getId()] = $owner->getSerialized();
         }
 
         return $this->returnResponse($data);
@@ -103,7 +102,7 @@ class OwnerController extends ApiController{
         $owner->setPhoneNumber($phoneNumber);
 
         foreach($unit as $u) {
-            $unitObject = new FloridaysEntityBundle\Entity\Unit();
+            $unitObject = new Unit();
             if($u['contractNumber'] == '' || $u['unitNumber'] == '') {
                 return $this->returnError('Unit/contract information seems to be incomplete. Please try again.');
             }
@@ -122,7 +121,7 @@ class OwnerController extends ApiController{
             return $this->returnError("Error: " . $e->getMessage());
         }
 
-        return $this->returnResponse($this->processOwner($owner));
+        return $this->returnResponse($owner->getSerialized());
     }
 
     /**
@@ -207,66 +206,7 @@ class OwnerController extends ApiController{
             return $this->returnError("Error: " . $e->getMessage());
         }
 
-        return $this->returnResponse($this->processOwner($owner));
-    }
-
-    /**
-     * @param Owner $owner
-     *
-     * @return array
-     */
-    private function processOwner(Owner $owner) {
-        return [
-            'id' => $owner->getId(),
-            'units' => $this->processOwnerUnits($owner->getUnits()),
-            'address' => $this->processOwnerAddress($owner->getAddress()),
-            'name' => [
-                'first' => $owner->getUser()->getFirstName(),
-                'last' => $owner->getUser()->getLastName(),
-            ],
-            'emailAddress' => $owner->getUser()->getEmailAddress(),
-            'phoneNumber' => $owner->getPhoneNumber()
-        ];
-    }
-
-    /**
-     * Process units for an owner
-     *
-     * @param PersistentCollection $units
-     *
-     * @return array
-     */
-    private function processOwnerUnits($units)
-    {
-        $data = [];
-
-        foreach($units as $unit) {
-            $data[$unit->getId()] = [
-                'unitNumber' => $unit->getUnitNumber(),
-                'contract' => $unit->getContractNumber()
-            ];
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param Address $address
-     *
-     * @return array
-     */
-    private function processOwnerAddress(Address $address)
-    {
-        $data = [
-            'street' => $address->getStreet(),
-            'suite' => $address->getSuite(),
-            'city' => $address->getCity(),
-            'state' => $address->getState(),
-            'zipCode' => $address->getZipCode(),
-            'country' => $address->getCountry()
-        ];
-
-        return $data;
+        return $this->returnResponse($owner->getSerialized());
     }
 
 }

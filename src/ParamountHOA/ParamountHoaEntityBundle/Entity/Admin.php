@@ -25,7 +25,7 @@ class Admin
     /**
      * @var User
      *
-     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\OneToOne(targetEntity="User", cascade="persist")
      * @ORM\JoinColumn(name="userId", referencedColumnName="id")
      */
     protected $user;
@@ -63,29 +63,6 @@ class Admin
     }
 
     /**
-     * Set active
-     *
-     * @param boolean $active
-     * @return Admin
-     */
-    public function setActive($active)
-    {
-        $this->active = $active;
-    
-        return $this;
-    }
-
-    /**
-     * Get active
-     *
-     * @return boolean 
-     */
-    public function getActive()
-    {
-        return $this->active;
-    }
-
-    /**
      * Set user
      *
      * @param \ParamountHOA\ParamountHoaEntityBundle\Entity\User $user
@@ -115,6 +92,10 @@ class Admin
     {
         if(is_null($this->getCreatedAt())) {
             $this->setCreatedAt(new \DateTime());
+        }
+
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
         }
 
         return $this;
@@ -197,5 +178,14 @@ class Admin
     public function getIsSuperAdmin()
     {
         return $this->isSuperAdmin;
+    }
+
+    public function getSerialized()
+    {
+        return [
+            'id' => $this->getId(),
+            'user' => $this->getUser()->getSerialized(),
+            'isSuperAdmin' => $this->getIsSuperAdmin()
+        ];
     }
 }

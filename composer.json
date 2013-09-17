@@ -49,5 +49,11 @@
         "branch-alias": {
             "dev-master": "2.3-dev"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:phpthug/ParamountEntityBundle.git"
+        }
+    ]
 }

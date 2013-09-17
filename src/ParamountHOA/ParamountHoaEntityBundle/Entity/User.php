@@ -26,7 +26,7 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="emailAddress", type="string", length=255)
+     * @ORM\Column(name="emailAddress", type="string", length=255, unique=true)
      */
     protected $emailAddress;
 
@@ -213,6 +213,10 @@ class User
             $this->setCreatedAt(new \DateTime());
         }
 
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
+        }
+
         return $this;
     }
 
@@ -293,5 +297,18 @@ class User
     public function getLastUpdated()
     {
         return $this->lastUpdated;
+    }
+
+    public function getSerialized()
+    {
+        return [
+            'id' => $this->getId(),
+            'emailAddress' => $this->getEmailAddress(),
+            'isActive' => $this->getIsActive(),
+            'name' => [
+                'first' => $this->getFirstName(),
+                'last' => $this->getLastName()
+            ]
+        ];
     }
 }

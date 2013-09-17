@@ -270,6 +270,10 @@ class Reservation {
             $this->setCreatedAt(new \DateTime());
         }
 
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
+        }
+
         return $this;
     }
 

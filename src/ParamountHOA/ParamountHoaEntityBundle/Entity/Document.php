@@ -207,6 +207,10 @@ class Document
             $this->setCreatedAt(new \DateTime());
         }
 
+        if(is_null($this->getLastUpdated())) {
+            $this->setLastUpdated(new \DateTime());
+        }
+
         return $this;
     }
 
@@ -264,5 +268,22 @@ class Document
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Get serialized document
+     *
+     * @return array
+     */
+    public function getSerialized()
+    {
+        return [
+                'id' => $this->getId(),
+                'path' => $this->getPath(),
+                'created' => $this->getCreatedAt(),
+                'archived' => $this->getArchived(),
+                'type' => $this->getType(),
+                'description' => $this->getDescription()
+        ];
     }
 }
