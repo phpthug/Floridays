@@ -16,8 +16,8 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new Khowe\FloridaysEntityBundle\FloridaysEntityBundle(),
-            new Khowe\FloridaysApiBundle\FloridaysApiBundle(),
+            new ParamountHOA\ParamountHoaApiBundle\ParamountHoaApiBundle(),
+            new ParamountHOA\ParamountHoaEntityBundle\ParamountHoaEntityBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

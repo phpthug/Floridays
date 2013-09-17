@@ -1,3 +1,0 @@
-floridays_entity_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: FloridaysEntityBundle:Default:index }
