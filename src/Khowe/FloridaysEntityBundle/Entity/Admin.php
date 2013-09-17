@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class Admin
 {
@@ -22,19 +23,33 @@ class Admin
     private $id;
 
     /**
-    * @var boolean
-    *
-    * @ORM\Column(name="active", type="boolean")
-    */
-    protected $active = true;
-
-    /**
      * @var User
      *
      * @ORM\OneToOne(targetEntity="User")
      * @ORM\JoinColumn(name="userId", referencedColumnName="id")
      */
     protected $user;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isSuperAdmin", type="boolean")
+     */
+    protected $isSuperAdmin = true;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="createdAt", type="datetime")
+     */
+    protected $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastUpdated", type="datetime")
+     */
+    protected $lastUpdated;
 
 
     /**
@@ -91,5 +106,96 @@ class Admin
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        if(is_null($this->getCreatedAt())) {
+            $this->setCreatedAt(new \DateTime());
+        }
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setUpdatedAtValue()
+    {
+        $this->setLastUpdated(new \DateTime());
+
+        return $this;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Admin
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set lastUpdated
+     *
+     * @param \DateTime $lastUpdated
+     * @return Admin
+     */
+    public function setLastUpdated($lastUpdated)
+    {
+        $this->lastUpdated = $lastUpdated;
+    
+        return $this;
+    }
+
+    /**
+     * Get lastUpdated
+     *
+     * @return \DateTime 
+     */
+    public function getLastUpdated()
+    {
+        return $this->lastUpdated;
+    }
+
+    /**
+     * Set isSuperAdmin
+     *
+     * @param boolean $isSuperAdmin
+     * @return Admin
+     */
+    public function setIsSuperAdmin($isSuperAdmin)
+    {
+        $this->isSuperAdmin = $isSuperAdmin;
+    
+        return $this;
+    }
+
+    /**
+     * Get isSuperAdmin
+     *
+     * @return boolean 
+     */
+    public function getIsSuperAdmin()
+    {
+        return $this->isSuperAdmin;
     }
 }
